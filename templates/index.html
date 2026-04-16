@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LENS - Resume Analyzer</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            margin-top: 40px;
+        }
+
+        h1 {
+            color: #38bdf8;
+        }
+
+        textarea {
+            width: 60%;
+            height: 140px;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            background: #1e293b;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        textarea::placeholder {
+            color: #aaa;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            background: #38bdf8;
+            color: black;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #0ea5e9;
+            transform: scale(1.05);
+        }
+
+        .card {
+            margin: 20px auto;
+            width: 60%;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            text-align: left;
+        }
+
+        .progress {
+            width: 100%;
+            background: #334155;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            width: 0%;
+            text-align: center;
+            color: black;
+            font-size: 13px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🔍 LENS - Resume Analyzer</h1>
+
+    <textarea id="resume" placeholder="Paste your resume here..."></textarea><br>
+
+    <button onclick="analyzeResume()">Analyze Resume</button>
+
+    <!-- Score -->
+    <div class="card">
+        <h3>Score</h3>
+        <div class="progress">
+            <div id="bar" class="progress-bar">0%</div>
+        </div>
+    </div>
+
+    <!-- Result -->
+    <div class="card">
+        <h3>Analysis</h3>
+        <pre id="output"></pre>
+    </div>
+
+</div>
+
+<script>
+function analyzeResume() {
+    let text = document.getElementById("resume").value;
+
+    fetch("/analyze", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ text: text })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        let result = data.result;
+        document.getElementById("output").innerText = result;
+
+        let scoreMatch = result.match(/Score: (\d+)/);
+        let score = scoreMatch ? parseInt(scoreMatch[1]) : 0;
+
+        let bar = document.getElementById("bar");
+        bar.style.width = score + "%";
+        bar.innerText = score + "%";
+
+        if (score >= 70) {
+            bar.style.background = "#22c55e";
+        } else if (score >= 40) {
+            bar.style.background = "#facc15";
+        } else {
+            bar.style.background = "#ef4444";
+        }
+    });
+}
+</script>
+
+</body>
+</html>
