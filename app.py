@@ -66,6 +66,7 @@ def analyze():
 
     # 🧮 Total Score
     score = skill_score + project_score + experience_score
+    score = min(score, 100)
 
     # 📈 Feedback
     if score >= 80:
